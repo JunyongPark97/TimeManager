@@ -1,0 +1,8 @@
+{% extends 'registration/base.html' %}
+{% block content %}
+
+    {{ time_before }}에서 {{ time_edit }}으로 수정 요청이 보내졌습니다.
+    <br>
+    <a class="btn btn-primary" href="{% url 'user:graph' %}">홈으로가기</a>
+
+{% endblock %}

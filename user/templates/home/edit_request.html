@@ -1,0 +1,23 @@
+{% extends 'registration/base.html' %}
+{% block content %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+    <style>
+    .list {
+        background-color: antiquewhite;
+        width: 90%;
+        {#margin: 0;#}
+    }
+    </style>
+
+    {% for info in request_list %}
+        {% if info.status == 0 %}
+            <div class="list"><span class="glyphicon glyphicon-check"></span> 받는사람 {{ info.receiver }} 보낸사람 {{ info.sender }}, 쉬는시간 {{ info.breaktime }}, 원래시간 {{ info.timelog.created_at }}, 수정시간 {{ info.update }}
+                {{ info.timelog_id }}, 사유 : {{ info.reason }}</div>
+        <a href="{% url 'user:editrequest' info.pk 1%}"><span class="glyphicon glyphicon-ok"></span>수락</a>
+        <a href="{% url 'user:editrequest' info.pk 2%}"><span class="glyphicon glyphicon-remove"></span>거절</a>
+        <br>
+        {% endif %}
+        <br>
+    {% endfor %}
+
+{% endblock %}

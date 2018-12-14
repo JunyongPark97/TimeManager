@@ -1,0 +1,51 @@
+{% extends 'registration/base.html' %}
+
+{% block content %}
+
+    {%  if user.is_authenticated  %}
+    <!-- 자기 자신인 것들은 무조건 보이기 clevel, leader, worker 전부 -->
+    <a href="{% url 'user:graph' %}"><span class="glyphicon glyphicon-stats"></span>그래프</a>
+    <h2>{{ user }}</h2>
+    {% for timelog in timelogs %}
+    <h4>{{ timelog.get_keyword_display }}</h4>
+    <h4> {{ timelog.created_at|date:"D, Y-m-d  H:i"}}, {{ timelog.half_day_off}} </h4>
+
+{#    <h4>{{ timelog.text2break }}</h4>#}
+    <a href="{% url 'user:request' timelog.pk %}">수정</a> &nbsp;
+    <br>
+    {% endfor %}
+    <br>
+    <br>
+    <br>
+
+<!-- 3인 애들 정보 가지고 있으면 : clevel, leader-->
+
+{#    {% if timelogs_3 != None %}#}
+{#        <h2>workers</h2>#}
+{#        <br>#}
+{#        {% for timelog in timelogs_3 %}#}
+{#            <h4>{{ timelog.user }}</h4>#}
+{#        <h4>{{ timelog.get_keyword_display }},  {{ timelog.created_at }} </h4>#}
+{##}
+{#        <br><br>#}
+{#        {% endfor %}#}
+{#        <br><br>#}
+{#    {% endif %}#}
+{#    <!-- 2인 애들 정보 가지고 있으면 : clevel-->#}
+{#    {% if timelogs_2 != None %}#}
+{#    <h2>leaders</h2>#}
+{#    <br>#}
+{#    {% for timelog in timelogs_2 %}#}
+{#    <h4>{{ timelog.get_keyword_display }}</h4>#}
+{#    <p> {{ timelog.created_at }} </p>#}
+{#    <br>#}
+{#    {% endfor %}#}
+{#    <br><br>#}
+{#    {% endif %}#}
+
+    {% else %}
+     <p>You are not logged in</p>
+     <a href="{% url 'user:login' %}">login</a>
+{% endif %}
+{#{% endif %}#}
+{% endblock %}

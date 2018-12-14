@@ -1,0 +1,45 @@
+{%  extends 'registration/base.html' %}
+{%  block content %}
+
+{#    <script>#}
+{#        $(document).ready(#}
+{#            function() {#}
+{#                $.ajax({#}
+{#                url: '/api/timelog/enter/',#}
+{#                type: 'get',#}
+{##}
+{#                success: function(data) {#}
+{#                    document.body.innerText = $.parseJ;#}
+{#                },#}
+{#                error:function(request,status,error) {#}
+{#                    alert("오류가 발생했습니다! 페이지를 새로고침한 후, 작업을 다시 시작해 주세요. code:"+request.status+"\n"+"error:"+error+"\n"+"message:"+request.responseText);#}
+{#                }#}
+{#            });#}
+{#            });#}
+{#    </script>#}
+{%  if user.is_active %}
+<h2>Welcome, {{ user.username }}</h2><br>
+ <a class="btn btn-primary" href="{%  url 'user:logout1' %}"><span class="glyphicon glyphicon-user"></span> 로그아웃</a>
+    <br><br>
+ <a class="btn btn-primary" href="{% url 'user:change_password' %}"><span class="glyphicon glyphicon-pencil"> 비밀번호변경</a>
+    <br><br>
+ <a class="btn btn-primary" href="{% url 'user:graph' %}"><span class="glyphicon glyphicon-home"> 홈으로가기</a>
+
+
+{% else %}
+    {% if form.errors %}
+    <p>ID나 비밀번호가 일치하지 않습니당</p>
+    {% endif %}
+
+<form method="POST" action="">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="" />
+    {{ form.as_p }}
+    <button type="submit">로그인</button>
+</form>
+
+<br>
+{#<p>아이디가 없으신가요? <a herf="{% url 'signup' %}">회원가입</a></p>#}
+
+{% endif %}
+{% endblock %}

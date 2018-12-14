@@ -1,0 +1,199 @@
+{% extends 'registration/base.html' %}
+{% block content %}
+{#    <script>#}
+{#        $(document).ready(#}
+{#            function() {#}
+{#                $.ajax({#}
+{#                url: '/api/timelog/enter/',#}
+{#                type: 'get',#}
+{##}
+{#                success: function(data) {#}
+{#                    document.body.innerText = data;#}
+{#                },#}
+{#                error:function(request,status,error) {#}
+{#                    alert("오류가 발생했습니다! 페이지를 새로고침한 후, 작업을 다시 시작해 주세요. code:"+request.status+"\n"+"error:"+error+"\n"+"message:"+request.responseText);#}
+{#                }#}
+{#            });#}
+{#            });#}
+{#    </script>#}
+{#{% if user.is_authenticated and user.is_active %}#}
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>#}
+{#    <style>#}
+{#    .chart {#}
+{#        display: inline-block !important;#}
+{#        width: 90%;#}
+{#        margin: 0 auto;#}
+{##}
+{#    }#}
+{#    .chart2 {#}
+{#        display: inline-block !important;#}
+{#        width: 43%;#}
+{#        background-color: azure;#}
+{#    }#}
+{#    .chart3 {#}
+{#        display: inline-block !important;#}
+{#        width: 43%;#}
+{#    }#}
+{#    </style>#}
+{#    <div>#}
+{#        <canvas id="myChart" class="chart"></canvas>#}
+{#    </div>#}
+{##}
+{#    <script>#}
+{#        var ctx = document.getElementById("myChart");#}
+        {#var ctx2 = document.getElementById("myChart2");#}
+{#var myChart = new Chart(ctx, {#}
+{#    type: 'bar',#}
+{#    data: {#}
+{#        labels: ["Mon", "Tue", "Wed", "Thr", "Fir", "Sat", "Sun"],#}
+{#        datasets: [{#}
+{#            label: "{{ user }}'s total hours = {{ own.total }}",#}
+{#            data: ['{{ own.0 }}', '{{ own.1 }}', '{{ own.2 }}', '{{ own.3 }}', '{{ own.4 }}', '{{ own.5 }}', '{{ own.6 }}'],#}
+{#            backgroundColor: [#}
+{#                'rgba(255, 99, 132, 0.2)',#}
+{#                'rgba(54, 162, 235, 0.2)',#}
+{#                'rgba(255, 206, 86, 0.2)',#}
+{#                'rgba(75, 192, 192, 0.2)',#}
+{#                'rgba(153, 102, 255, 0.2)',#}
+{#                'rgba(255, 159, 64, 0.2)',#}
+{#                'rgba(225, 119, 84, 0.2)'#}
+{#            ],#}
+{#            borderColor: [#}
+{#                'rgba(255,99,132,1)',#}
+{#                'rgba(54, 162, 235, 1)',#}
+{#                'rgba(255, 206, 86, 1)',#}
+{#                'rgba(75, 192, 192, 1)',#}
+{#                'rgba(153, 102, 255, 1)',#}
+{#                'rgba(255, 159, 64, 1)',#}
+{#                'rgba(225, 119, 84, 1)'#}
+{#            ],#}
+{#            borderWidth: 1#}
+{#        }]#}
+{#    },#}
+{#    options: {#}
+{#        responsive: false,#}
+{#        scales: {#}
+{#            yAxes: [{#}
+{#                ticks: {#}
+{#                    beginAtZero:true#}
+{#                }#}
+{#            }]#}
+{#        }#}
+{#    }#}
+{#});#}
+{#    </script>#}
+{##}
+{#    <br>#}
+{#    <br>#}
+{#    <br>#}
+{##}
+{#   {% if grade2data != None %}#}
+{#    {% for user,data in grade2data.items %}#}
+{#    <canvas id = "graph{{ forloop.counter}}" class="chart2"></canvas>#}
+{#    <script>#}
+{#var ctx{{ forloop.counter }} = document.getElementById("graph{{ forloop.counter}}");#}
+{#var graph{{ forloop.counter }} = new Chart(ctx{{ forloop.counter }}, {#}
+{#    type: 'bar',#}
+{#    data: {#}
+{#        labels: ["Mon", "Tue", "Wed", "Thr", "Fir", "Sat", "Sun"],#}
+{#        datasets: [{#}
+{#            label: "{{ user }}'s total hours = {{ data.total}}",#}
+{#            data: ['{{ data.0 }}', '{{ data.1 }}', '{{ data.2 }}', '{{ data.3 }}', '{{ data.4 }}', '{{ data.5 }}', '{{ data.6 }}'],#}
+{#            backgroundColor: [#}
+{#                'rgba(255, 99, 132, 0.2)',#}
+{#                'rgba(54, 162, 235, 0.2)',#}
+{#                'rgba(255, 206, 86, 0.2)',#}
+{#                'rgba(75, 192, 192, 0.2)',#}
+{#                'rgba(153, 102, 255, 0.2)',#}
+{#                'rgba(255, 159, 64, 0.2)',#}
+{#                'rgba(225, 119, 84, 0.2)'#}
+{#            ],#}
+{#            borderColor: [#}
+{#                'rgba(255,99,132,1)',#}
+{#                'rgba(54, 162, 235, 1)',#}
+{#                'rgba(255, 206, 86, 1)',#}
+{#                'rgba(75, 192, 192, 1)',#}
+{#                'rgba(153, 102, 255, 1)',#}
+{#                'rgba(255, 159, 64, 1)',#}
+{#                'rgba(225, 119, 84, 1)'#}
+{#            ],#}
+{#            borderWidth: 1#}
+{#        }]#}
+{#    },#}
+{#    options: {#}
+{#        responsive: false,#}
+{#        scales: {#}
+{#            yAxes: [{#}
+{#                ticks: {#}
+{#                    beginAtZero:true#}
+{#                }#}
+{#            }]#}
+{#        }#}
+{#    }#}
+{#});#}
+{#   </script>#}
+{#   {% endfor %}#}
+{#   {% endif %}#}
+{#    <br>#}
+{#    <br>#}
+{#    <br>#}
+{##}
+{#   {% if grade3data != None %}#}
+{#    {% for user3,data3 in grade3data.items %}#}
+{##}
+{#    <canvas id = "graph3{{ forloop.counter}}" class="chart3"></canvas>#}
+{#    <script>#}
+{#var ctx{{ forloop.counter }} = document.getElementById("graph3{{ forloop.counter}}");#}
+{#var graph3{{ forloop.counter }} = new Chart(ctx{{ forloop.counter }}, {#}
+{#    type: 'bar',#}
+{#    data: {#}
+{#        labels: ["Mon", "Tue", "Wed", "Thr", "Fir", "Sat", "Sun"],#}
+{#        datasets: [{#}
+{#            label: "{{ user3 }}'s total hours = {{ data3.total}}",#}
+{#            data: ['{{ data3.0 }}', '{{ data3.1 }}', '{{ data3.2 }}', '{{ data3.3 }}', '{{ data3.4 }}', '{{ data3.5 }}', '{{ data3.6 }}'],#}
+{#            backgroundColor: [#}
+{#                'rgba(255, 99, 132, 0.2)',#}
+{#                'rgba(54, 162, 235, 0.2)',#}
+{#                'rgba(255, 206, 86, 0.2)',#}
+{#                'rgba(75, 192, 192, 0.2)',#}
+{#                'rgba(153, 102, 255, 0.2)',#}
+{#                'rgba(255, 159, 64, 0.2)',#}
+{#                'rgba(225, 119, 84, 0.2)'#}
+{#            ],#}
+{#            borderColor: [#}
+{#                'rgba(255,99,132,1)',#}
+{#                'rgba(54, 162, 235, 1)',#}
+{#                'rgba(255, 206, 86, 1)',#}
+{#                'rgba(75, 192, 192, 1)',#}
+{#                'rgba(153, 102, 255, 1)',#}
+{#                'rgba(255, 159, 64, 1)',#}
+{#                'rgba(225, 119, 84, 1)'#}
+{#            ],#}
+{#            borderWidth: 1#}
+{#        }]#}
+{#    },#}
+{#    options: {#}
+{#        responsive: false,#}
+{#        scales: {#}
+{#            yAxes: [{#}
+{#                ticks: {#}
+{#                    beginAtZero:true#}
+{#                }#}
+{#            }]#}
+{#        }#}
+{#    }#}
+{#});#}
+{#    </script>#}
+{#   {% endfor %}#}
+{#   {% endif %}#}
+{##}
+{#    <br>#}
+{#    <br>#}
+{#    <br>#}
+{##}
+{##}
+{#{% else %}#}
+{#     <p>You are not logged in</p>#}
+{#     <a href="{% url 'user:login' %}">login</a>#}
+{#{% endif %}#}
+{% endblock %}
