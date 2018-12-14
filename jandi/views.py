@@ -15,16 +15,17 @@ class JandiEnterAPIView(APIView):
     def post(self, request):
         try:
             data = request.data
-            text = data['text']
-            if '정정' in text:
-                raise Exception('Wrong input')
-            else:
-                EnterTimelog.objects.create(user=data['writerName'],
-                                            created_at=data['createdAt'],
-                                            text=data['text'])
-                return HttpResponse(status=201)
-
-                print('intty')
+            print(data)
+            # text = data['text']
+            # if '정정' in text:
+            #     raise Exception('Wrong input')
+            # else:
+            #     EnterTimelog.objects.create(user=data['writerName'],
+            #                                 created_at=data['createdAt'],
+            #                                 text=data['text'])
+            #     return HttpResponse(status=201)
+            #
+            #     print('intty')
 
         except Exception:
             return Response(None, status=status.HTTP_400_BAD_REQUEST)
