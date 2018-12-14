@@ -13,7 +13,7 @@ class JandiSerializer(serializers.Serializer):
     createdAt=serializers.DateTimeField()
 
     def create(self, validated_data):
-        user = User.objects.get(username=validated_data['writerName'])
+        user = User.objects.get(writter_id=validated_data['writerName'])
         return EnterTimelog.objects.create(
             user=user,
             text=validated_data['text'],

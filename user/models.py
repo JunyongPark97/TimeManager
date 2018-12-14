@@ -14,7 +14,7 @@ import user
 
 class User(AbstractUser):
     grade= models.IntegerField(null=True, blank=True)
-    writter_id=models.CharField(null=True,max_length=10)
+    writter_id=models.CharField(null=True,max_length=100)
 
 
 
