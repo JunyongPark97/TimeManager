@@ -21,7 +21,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
-from user.forms import RequestForm1, RequestForm2, RequestForm3
+# from user.forms import RequestForm1, RequestForm2, RequestForm3
 from user.models import *
 from user.permissions import GradePermission
 from user.serializers import UserSerializer, EnterTimelogSerializer, OutTimelogSerializer, \
@@ -232,37 +232,37 @@ def list(request):
     else:
         return render (request, 'home/home.html')
 
-@login_required()
-# 변경사항 입력하는 뷰
-def request_view(request,pk):#여기서 pk는 수정 누를때(timelog.pk) pk(수정 누르는 해당 time table의 id) 아 그리고 헷갈리는데
-    #request에는 userid(user), breaktime, update, receiver가 들어있음( 우리가 입력해서 보냈던 정보가 이미 들어있음)
-
-    if request.method == "GET": # request가 GET이면 RequestForm을 실행 및 보여주고,
-        if request.user.grade == 1:
-            forsdiv = RequestForm1
-        elif request.user.grade == 2:
-            forsdiv = RequestForm2
-        else:
-            forsdiv = RequestForm3
-        form = forsdiv()
-        return render(request, 'home/request.html', context={'form': form})
-
-    elif request.method == "POST":
-        if request.user.grade == 1:
-            form = RequestForm1(request.POST)
-        elif request.user.grade == 2:
-            form = RequestForm2(request.POST)
-        else:
-            form = RequestForm3(request.POST)
-
-        if form.is_valid():
-            request_info = form.save(commit=False)
-            request_info.sender = request.user
-            request_info.timelog = Timelog.objects.get(pk=pk)
-            request_info.save()# 이제 이 값은 db에 저장되고, 나중에 grade 별로 RequestInfo.objects.get() 다르게 해서 보여주면 됨.
-            context = {'time_before':request_info.timelog.created_at,'time_edit':request_info.update}
-            return render(request, 'home/request_done.html', context)
-    return render(request, 'home/home.html')
+# @login_required()
+# # 변경사항 입력하는 뷰
+# def request_view(request,pk):#여기서 pk는 수정 누를때(timelog.pk) pk(수정 누르는 해당 time table의 id) 아 그리고 헷갈리는데
+#     #request에는 userid(user), breaktime, update, receiver가 들어있음( 우리가 입력해서 보냈던 정보가 이미 들어있음)
+#
+#     if request.method == "GET": # request가 GET이면 RequestForm을 실행 및 보여주고,
+#         if request.user.grade == 1:
+#             forsdiv = RequestForm1
+#         elif request.user.grade == 2:
+#             forsdiv = RequestForm2
+#         else:
+#             forsdiv = RequestForm3
+#         form = forsdiv()
+#         return render(request, 'home/request.html', context={'form': form})
+#
+#     elif request.method == "POST":
+#         if request.user.grade == 1:
+#             form = RequestForm1(request.POST)
+#         elif request.user.grade == 2:
+#             form = RequestForm2(request.POST)
+#         else:
+#             form = RequestForm3(request.POST)
+#
+#         if form.is_valid():
+#             request_info = form.save(commit=False)
+#             request_info.sender = request.user
+#             request_info.timelog = Timelog.objects.get(pk=pk)
+#             request_info.save()# 이제 이 값은 db에 저장되고, 나중에 grade 별로 RequestInfo.objects.get() 다르게 해서 보여주면 됨.
+#             context = {'time_before':request_info.timelog.created_at,'time_edit':request_info.update}
+#             return render(request, 'home/request_done.html', context)
+#     return render(request, 'home/home.html')
 
 def change_password(request):
     if request.method =='POST':

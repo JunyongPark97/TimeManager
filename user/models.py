@@ -1,5 +1,6 @@
 from datetime import timezone
 
+from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -10,9 +11,11 @@ from django.db.models.signals import post_save
 
 import user
 
+
 class User(AbstractUser):
-    grade= models.IntegerField()
+    grade= models.IntegerField(null=True, blank=True)
     writter_id=models.CharField(null=True,max_length=10)
+
 
 
 class Timelog(models.Model):# 얘를 상속받을 것
