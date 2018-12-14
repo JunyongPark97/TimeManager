@@ -10,31 +10,21 @@ from user.models import EnterTimelog, OutTimelog, EnterAtHomeTimelog, OutAtHomeT
 
 
 class JandiEnterAPIView(APIView):
-    # serializer_class = JandiSerializer
+    serializer_class = JandiSerializer
 
     def post(self, request):
-        try:
-            data = request.data
-            print(data)
-            # text = data['text']
-            # if '정정' in text:
-            #     raise Exception('Wrong input')
-            # else:
-            #     EnterTimelog.objects.create(user=data['writerName'],
-            #                                 created_at=data['createdAt'],
-            #                                 text=data['text'])
-            #     return HttpResponse(status=201)
-            #
-            #     print('intty')
-
-        except Exception:
-            return Response(None, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({})
 
 
 class JandiOutAPIView(APIView):
-    # serializer_class = JandiSerializer
+    serializer_class = JandiSerializer
 
     def post(self, request):
+        # serializer = serial
+
         try:
             data = request.data
             text=data['text']
