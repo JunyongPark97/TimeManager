@@ -85,7 +85,7 @@ class TimelogList(APIView):
 
 class TimelogEdit(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'timelog_edit.html'
+    template_name = 'home/timelog_edit.html'
 
     def get(self, request, pk):
         form=EnterEditForm()
