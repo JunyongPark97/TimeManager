@@ -46,7 +46,7 @@ class JandiOutSerializer(JandiSerializer):
 
         elif len(num) == 1 and not '오후반차' in text:
             return OutTimelog.objects.create(
-                user=validated_data['writerName'],
+                user=user,
                 created_at=validated_data['createdAt'],
                 text=text,
                 breaktime=num
