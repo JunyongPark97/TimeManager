@@ -53,5 +53,12 @@ class JandiOutSerializer(JandiSerializer):
                 breaktime=int(num[0])
             )
 
+        elif not len(num) == 1 and '오후반차' in text:
+            return OutTimelog.objects.create(
+                user=user,
+                created_at=validated_data['createdAt'],
+                text=text,
+            )
+
         elif '정정' in text:
             return HttpResponse('Wrong input')
