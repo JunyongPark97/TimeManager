@@ -56,7 +56,7 @@ class UpdateRequest(models.Model):
     reason = models.TextField(null=True)
     breaktime = models.IntegerField()
     # pub_date = models.DateTimeField()
-    #
+    origin = models.ForeignKey(EnterTimelog, related_name='originRequestInfo',on_delete=models.CASCADE)
     # class Meta:
     #     ordering = ['-pub_date']
 

@@ -67,4 +67,4 @@ class UpdateRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpdateRequest
-        fields = '__all__'
+        fields = ('receiver','update','reason','breaktime')
