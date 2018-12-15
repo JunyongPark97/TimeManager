@@ -40,7 +40,7 @@ class JandiOutSerializer(JandiSerializer):
                 user=user,
                 created_at=validated_data['createdAt'],
                 text=text,
-                breaktime=num,
+                breaktime=int(num[0]),
                 half_day_off='오후반차'
             )
 
@@ -49,7 +49,7 @@ class JandiOutSerializer(JandiSerializer):
                 user=user,
                 created_at=validated_data['createdAt'],
                 text=text,
-                breaktime=num
+                breaktime=int(num[0])
             )
 
         elif '정정' in text:
