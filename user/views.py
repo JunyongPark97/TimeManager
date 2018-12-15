@@ -82,7 +82,7 @@ class TimelogList(APIView):
         queryset = EnterTimelog.objects.filter(user=user)#쿼리셋합쳐서 순서대로 나열하기
         return Response({'timelogs': queryset})
 
-class TimelogEdit(APIView)
+class TimelogEdit(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'timelog_edit.html'
 
