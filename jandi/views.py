@@ -20,7 +20,7 @@ class JandiInputAPIView(APIView):
 
 
 class JandiEnterAPIView(JandiInputAPIView):
-    super().serializer_class = JandiEnterSerializer
+    serializer_class = JandiEnterSerializer
 
 
 class JandiOutAPIView(APIView):
