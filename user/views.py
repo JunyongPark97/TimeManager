@@ -87,10 +87,13 @@ class TimelogEdit(APIView):
     template_name = 'home/timelog_edit.html'
 
     def get(self, request, pk):
-        form=EnterEditForm()
-        timelog=get_object_or_404(EnterTimelog,pk=pk)
+        print(request)
+        # form=EnterEditForm()
+        # timelog=get_object_or_404(EnterTimelog,pk=pk)
+        timelog=EnterTimelog.objects.get(pk=pk)
+        serializer = UpdateRequestSerializer
         # serializer = EnterTimelogSerializer
-        return Response({'form': form, 'timelogs':timelog})
+        return Response({'serializer': serializer, 'timelogs':timelog})
 
     def post(self, request, pk):
         user=request.user

@@ -4,46 +4,46 @@
 {% block content %}
 {#<h1>Timelog </h1>#}
 {##}
-{#<form action="{% url 'timelog_edit'%}" method="POST">#}
-{#    {% csrf_token %}#}
-{#    {% render_form serializer %}#}
-{#    <input type="submit" value="Save">#}
-{#</form>#}
+<form action="{% url 'timelog_edit' %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <input type="submit" value="Save">
+</form>
 {##}
-    <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-	<script type="text/javascript">
-
-    function onSubmit() {
-    if (sending) {
-        error("이미 전송중입니다. 잠시만 더 기다려주세요. (반응이 없으면 페이지를 새로고침해 주세요)");
-    } else {
-        error("잠시만 기다려주세요...");
-        sending = true;
-        $.ajax({
-            url: '/timelog_edit/{{ timelogs.pk }}',
-            type: 'post',
-            data: {
-                {{ form.data }}
-            },
-            success: function() {
-                location.reload(true);
-            },
-            error:function(request,status,error) {
-                alert("오류가 발생했습니다! 페이지를 새로고침한 후, 작업을 다시 시작해 주세요. code:"+request.status+"\n"+"error:"+error+"\n"+"message:"+request.responseText);
-            }
-        });
-    }
-}
-	</script>
-
-</head>
-<body>
-	<form method="post" name = "frm" action="{% url 'user:timelog_edit' timelogs.pk%}">
-
-		{% csrf_token%}
-        {% form.as_p %}
-		<button type="button" onclick="onSubmit();">submit</button>
-	</form>
+{#    <head>#}
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>#}
+{##}
+{#	<script type="text/javascript">#}
+{##}
+{#    function onSubmit() {#}
+{#    if (sending) {#}
+{#        error("이미 전송중입니다. 잠시만 더 기다려주세요. (반응이 없으면 페이지를 새로고침해 주세요)");#}
+{#    } else {#}
+{#        error("잠시만 기다려주세요...");#}
+{#        sending = true;#}
+{#        $.ajax({#}
+{#            url: '/timelog_edit/{{ timelogs.pk }}',#}
+{#            type: 'post',#}
+{#            data: {#}
+{#                {{ form.data }}#}
+{#            },#}
+{#            success: function() {#}
+{#                location.reload(true);#}
+{#            },#}
+{#            error:function(request,status,error) {#}
+{#                alert("오류가 발생했습니다! 페이지를 새로고침한 후, 작업을 다시 시작해 주세요. code:"+request.status+"\n"+"error:"+error+"\n"+"message:"+request.responseText);#}
+{#            }#}
+{#        });#}
+{#    }#}
+{#}#}
+{#	</script>#}
+{##}
+{#</head>#}
+{#<body>#}
+{#	<form method="post" name = "frm" action="{% url 'user:timelog_edit' timelogs.pk%}">#}
+{##}
+{#		{% csrf_token%}#}
+{#        {% form.as_p %}#}
+{#		<button type="button" onclick="onSubmit();">submit</button>#}
+{#	</form>#}
 {% endblock %}
