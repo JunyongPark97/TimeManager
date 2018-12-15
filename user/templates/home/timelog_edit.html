@@ -1,0 +1,14 @@
+
+{% extends 'registration/base.html' %}
+{% load rest_framework %}
+{% block content %}
+<h1>Profile - {{ profile.name }}</h1>
+
+<form action="{% url 'profile-detail' pk=profile.pk %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <input type="submit" value="Save">
+</form>
+
+
+{% endblock %}

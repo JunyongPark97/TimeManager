@@ -48,17 +48,17 @@ class OutAtHomeTimelog(Timelog):
 class UpdateRequest(models.Model):
     sender = models.ForeignKey(User, related_name='senderRequestinfo', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='receiverRequestinfo', on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    time_log = GenericForeignKey('content_type', 'object_id')
+    # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # object_id = models.PositiveIntegerField()
+    # time_log = GenericForeignKey('content_type', 'object_id')
     update = models.DateTimeField()
-    status = models.IntegerField(default=0, choices=((0,'대기중'),(1,'수락'),(2,'거절')))
+    # status = models.IntegerField(default=0, choices=((0,'대기중'),(1,'수락'),(2,'거절')))
     reason = models.TextField(null=True)
     breaktime = models.IntegerField()
-    pub_date = models.DateTimeField()
-
-    class Meta:
-        ordering = ['-pub_date']
+    # pub_date = models.DateTimeField()
+    #
+    # class Meta:
+    #     ordering = ['-pub_date']
 
 
 # def create_entry(sender, **kwargs):

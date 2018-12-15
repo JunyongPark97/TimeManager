@@ -6,18 +6,18 @@ from rest_framework.routers import SimpleRouter
 
 from user import views
 from user.views import EnterTimelogViewSet, OutTimelogViewSet, EnterAtHomeTimelogViewSet, \
-    OutAtHomeTimelogViewSet, UpdateRequestEnterViewSet, TimelogList
+    OutAtHomeTimelogViewSet, TimelogList, TimelogEdit
 
 router = SimpleRouter()
 router.register('enter', EnterTimelogViewSet)
 router.register('out', OutTimelogViewSet)
 router.register('enter-at-home', EnterAtHomeTimelogViewSet)
 router.register('out-at-home', OutAtHomeTimelogViewSet)
-router.register('update-request/enter', UpdateRequestEnterViewSet)
+# router.register('update-request/enter', UpdateRequestEnterViewSet)
 
 app_name='user'
 urlpatterns = [
-    path('', views.graph, name='graph'),
+    path('', TimelogList.as_view(), name='timelog_list'),
     path('login/',LoginView.as_view(),name='login'),
     path('logout1/',LogoutView.as_view(),{'next_page':'/'},name='logout1'),
     # path('request/<int:pk>', views.request_view, name='request'),
@@ -31,5 +31,5 @@ urlpatterns = [
     path('ex/', views.makeEach, name='ex'),
     path('api/timelog/', include(router.urls)),
     path('update-request/',views.update_request ,name='update_request'),
-    path('timelogs/',TimelogList.as_view(), name='timelog_list')
+    path('timelog_edit/',TimelogEdit.as_view(), name='timelog_edit')
 ]

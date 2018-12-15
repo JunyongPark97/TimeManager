@@ -4,9 +4,10 @@
 <h1>Timelogs</h1>
 <ul>
     {% for timelog in timelogs %}
-    <li>{{ timelog.user }}</li>
-    <li>{{ timelog.text }}</li>
-    <li>{{ timelog.created_at }}</li>
+    <li>{{ timelog.user }},  {{ timelog.text }},  {{ timelog.created_at }}</li>
+    <a href="{% url 'user:timelog_edit' timelog.pk %}"></a>
+        <br>
+        <br>
     {% endfor %}
 </ul>
 

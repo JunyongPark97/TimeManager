@@ -32,10 +32,6 @@ class TimelogSerializer(serializers.ModelSerializer):
     text = serializers.CharField(max_length=10)
     user = UserSerializer(read_only=True)
 
-    # class Meta:
-    #     model = Timelog
-    #     fields = '__all__'
-
 
 class EnterTimelogSerializer(TimelogSerializer):
     class Meta:
@@ -65,19 +61,9 @@ class OutAtHomeTimelogSerializer(TimelogSerializer):
         model = OutAtHomeTimelog
         fields = '__all__'
 
-class UpdateRequestSerializer(serializers.ModelSerializer):
-    pass
 
-class UpdateRequestEnterSerializer(UpdateRequestSerializer):
-    object_id = serializers.PrimaryKeyRelatedField(queryset=EnterTimelog.objects.all())
+class UpdateRequestSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = UpdateRequest
         fields = '__all__'
-
-
-class UpdateRequestOutSerializer(UpdateRequestSerializer):
-    pass
-class UpdateRequestEnterAtHomeSerializer(UpdateRequestSerializer):
-    pass
-class UpdateRequestOutAtHomeSerializer(UpdateRequestSerializer):
-    pass

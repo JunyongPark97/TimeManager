@@ -2,7 +2,7 @@
 {{ timelog.user }}
 {{ timelog.created_at }}
 {{ timelog.text }}
-        <a href="{% url 'user:request' timelog.pk %}">수정</a> &nbsp;
+        <a href="{% url 'user:request' %}">수정</a> &nbsp;
 
     <br>
 {% endfor %}

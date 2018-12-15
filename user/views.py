@@ -25,7 +25,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from user.models import *
 from user.permissions import GradePermission
 from user.serializers import UserSerializer, EnterTimelogSerializer, OutTimelogSerializer, \
-    EnterAtHomeTimelogSerializer, OutAtHomeTimelogSerializer, UpdateRequestSerializer, UpdateRequestEnterSerializer
+    EnterAtHomeTimelogSerializer, OutAtHomeTimelogSerializer, UpdateRequestSerializer
 
 
 class TimelogReadOnlyViewSet(mixins.CreateModelMixin,# 모델 뷰셋 인데 따로 기능 수정해야 해서 선언
@@ -61,10 +61,10 @@ class OutAtHomeTimelogViewSet(TimelogReadOnlyViewSet):
     serializer_class = OutAtHomeTimelogSerializer
 
 
-class UpdateRequestEnterViewSet(ModelViewSet):
-    queryset = UpdateRequest.objects.all()## 나중에 client에서 url호출시 pk받기
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UpdateRequestEnterSerializer
+# class UpdateRequestEnterViewSet(ModelViewSet):
+#     queryset = UpdateRequest.objects.all()## 나중에 client에서 url호출시 pk받기
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = UpdateRequestEnterSerializer
 
 class UpdateRequestOutViewSet(ModelViewSet):
     queryset = UpdateRequest.objects.all()
@@ -82,6 +82,22 @@ class TimelogList(APIView):
         queryset = EnterTimelog.objects.filter(user=user)
         return Response({'timelogs': queryset})
 
+class TimelogEdit(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'timelog_edit.html'
+
+    def get(self, request, pk):
+        timelog = get_object_or_404(UpdateRequest, pk=pk)
+        serializer = UpdateRequestSerializer(timelog)
+        return Response({'serializer': serializer, 'timelogs': timelog})
+
+    def post(self, request, pk):
+        timelog = get_object_or_404(UpdateRequest, pk=pk)
+        serializer = UpdateRequestSerializer(timelog, data=request.data)
+        if not serializer.is_valid():
+            return Response({'serializer': serializer, 'timelogs': timelog})
+        serializer.save()
+        return redirect('user:timelog_list')
 
 
 
