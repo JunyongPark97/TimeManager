@@ -75,6 +75,7 @@ class UpdateRequestOutViewSet(ModelViewSet):
 class TimelogList(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home/timelog_list.html'
+    permission_classes = (IsAuthenticated, GradePermission)
 
     def get(self, request):
         queryset = EnterTimelog.objects.all()
