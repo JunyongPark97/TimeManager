@@ -3,8 +3,10 @@
 
 <h1>Timelogs</h1>
 <ul>
-    {% for profile in profiles %}
-    <li>{{ profile.name }}</li>
+    {% for timelog in timelogs %}
+    <li>{{ timelog.user }}</li>
+    <li>{{ timelog.text }}</li>
+    <li>{{ timelog.created_at }}</li>
     {% endfor %}
 </ul>
 
