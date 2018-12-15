@@ -40,7 +40,7 @@
 
 </head>
 <body>
-	<form method="post" name = "frm" action="{% url 'timelog_edit' timelogs.pk%}">
+	<form method="post" name = "frm" action="{% url 'user:timelog_edit' timelogs.pk%}">
 
 		{% csrf_token%}
         {% form.as_p %}
