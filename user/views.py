@@ -78,7 +78,7 @@ class TimelogList(APIView):
     permission_classes = (IsAuthenticated, GradePermission)
 
     def get(self, request):
-        queryset = EnterTimelog.objects.all()
+        queryset = EnterTimelog.objects.filter(user=user)
         return Response({'timelogs': queryset})
 
 
