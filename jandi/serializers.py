@@ -21,6 +21,7 @@ class JandiEnterSerializer(JandiSerializer):
 
     def create(self, validated_data):
         user = User.objects.get(writter_id=validated_data['writerName'])
+        print(validated_data)
         return EnterTimelog.objects.create(
             user=user,
             text=validated_data['text'],
@@ -70,6 +71,7 @@ class JandiEnterHomeSerializer(JandiSerializer):
 
     def create(self, validated_data):
         user = User.objects.get(writter_id=validated_data['writerName'])
+        print(validated_data)
         return EnterAtHomeTimelog.objects.create(
             user=user,
             text=validated_data['text'],
