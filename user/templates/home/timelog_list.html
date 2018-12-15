@@ -5,7 +5,7 @@
 <ul>
     {% for timelog in timelogs %}
     <li>{{ timelog.user }},  {{ timelog.text }},  {{ timelog.created_at }}</li>
-    <a href="{% url 'user:timelog_edit' timelog.pk %}"></a>
+    <a href="{% url 'user:timelog_edit' %}"></a>
         <br>
         <br>
     {% endfor %}
