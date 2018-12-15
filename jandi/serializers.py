@@ -1,6 +1,9 @@
-from rest_framework import serializers
+import re
 
-from user.models import EnterTimelog, User
+from rest_framework import serializers, status
+from rest_framework.response import Response
+
+from user.models import EnterTimelog, User, OutTimelog
 
 
 class JandiSerializer(serializers.Serializer):
@@ -12,6 +15,8 @@ class JandiSerializer(serializers.Serializer):
     keyword=serializers.CharField()
     createdAt=serializers.DateTimeField()
 
+class JandiEnterSerializer(JandiSerializer):
+
     def create(self, validated_data):
         user = User.objects.get(writter_id=validated_data['writerName'])
         return EnterTimelog.objects.create(
@@ -21,9 +26,35 @@ class JandiSerializer(serializers.Serializer):
         )
 
 
-    # body = serializers.CharField()
-    # connectColor = serializers.CharField(required=False)
-    # title = serializers.CharField(required=False)
-    # connectInfo = serializers.JSONField(required=False)
+class JandiOutSerializer(JandiSerializer):
 
-# class Jandi
+    def create(self, validated_data):
+        user = User.objects.get(writter_id=validated_data['writerName'])
+        try:
+            text = validated_data['text']
+            num = re.findall("\d+", text)
+
+            if len(num) == 1 and '오후반차' in text:
+                OutTimelog.objects.create(
+                user=user,
+                created_at=validated_data['createdAt'],
+                text=text,
+                breaktime=num,
+                half_day_off='오후반차'
+                )
+                print('00')
+
+            elif len(num) == 1 and not '오후반차' in text:
+                OutTimelog.objects.create(
+                user=validated_data['writerName'],
+                created_at=validated_data['createdAt'],
+                text=text,
+                breaktime=num
+                )
+                print('--')
+
+            elif '정정' in text:
+                raise Exception('Wrong input')
+
+        except Exception:
+            return Response(None, status=status.HTTP_400_BAD_REQUEST)
