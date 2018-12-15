@@ -19,6 +19,7 @@ class User(AbstractUser):
 
 
 class Timelog(models.Model):# 얘를 상속받을 것
+    token=models.CharField(null=True,max_length=100)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField()
     text = models.CharField(max_length=10)
