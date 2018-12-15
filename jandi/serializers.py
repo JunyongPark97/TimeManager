@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from user.models import EnterTimelog, User, OutTimelog
+from user.models import EnterTimelog, User, OutTimelog, EnterAtHomeTimelog, OutAtHomeTimelog
 
 
 class JandiSerializer(serializers.Serializer):
@@ -15,6 +15,7 @@ class JandiSerializer(serializers.Serializer):
     text=serializers.CharField()
     keyword=serializers.CharField()
     createdAt=serializers.DateTimeField()
+
 
 class JandiEnterSerializer(JandiSerializer):
 
@@ -58,7 +59,43 @@ class JandiOutSerializer(JandiSerializer):
                 user=user,
                 created_at=validated_data['createdAt'],
                 text=text,
+                half_day_off='오후반차'
             )
 
-        elif '정정' in text:
+        else:
             return HttpResponse('Wrong input')
+
+
+class JandiEnterHomeSerializer(JandiSerializer):
+
+    def create(self, validated_data):
+        user = User.objects.get(writter_id=validated_data['writerName'])
+        return EnterAtHomeTimelog.objects.create(
+            user=user,
+            text=validated_data['text'],
+            created_at=validated_data['createdAt']
+        )
+
+
+class JandiOutHomeSerializer(JandiSerializer):
+
+    def create(self, validated_data):
+        user = User.objects.get(writter_id=validated_data['writerName'])
+        print(validated_data)
+        text = validated_data['text']
+        num = re.findall("\d+", text)
+
+        if num:
+            return OutAtHomeTimelog.objects.create(
+                user=user,
+                created_at=validated_data['createdAt'],
+                text=text,
+                breaktime=int(num[0])
+            )
+
+        else:
+            return OutAtHomeTimelog.objects.create(
+                user=user,
+                created_at=validated_data['createdAt'],
+                text=text,
+            )

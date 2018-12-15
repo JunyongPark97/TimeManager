@@ -5,18 +5,22 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from jandi.serializers import JandiEnterSerializer, JandiOutSerializer
+from jandi.serializers import JandiEnterSerializer, JandiOutSerializer, JandiEnterHomeSerializer
 from user.models import EnterTimelog, OutTimelog, EnterAtHomeTimelog, OutAtHomeTimelog
 
 
-class JandiEnterAPIView(APIView):
-    serializer_class = JandiEnterSerializer
+class JandiInputAPIView(APIView):
+    serializer_class = None
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({})
+
+
+class JandiEnterAPIView(JandiInputAPIView):
+    super().serializer_class = JandiEnterSerializer
 
 
 class JandiOutAPIView(APIView):
@@ -30,7 +34,7 @@ class JandiOutAPIView(APIView):
 
 
 class JandiEnterHomeAPIView(APIView):
-    # serializer_class = JandiSerializer
+    serializer_class = JandiEnterHomeSerializer
 
     def post(self, request):
         try:
