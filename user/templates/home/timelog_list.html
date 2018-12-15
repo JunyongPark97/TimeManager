@@ -1,0 +1,11 @@
+{% extends 'registration/base.html' %}
+{% block content %}
+
+<h1>Timelogs</h1>
+<ul>
+    {% for profile in profiles %}
+    <li>{{ profile.name }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

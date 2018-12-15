@@ -14,9 +14,9 @@ from django.utils import timezone
 import datetime
 import  time
 from datetime import timedelta
-
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -60,8 +60,9 @@ class OutAtHomeTimelogViewSet(TimelogReadOnlyViewSet):
     permission_classes = (IsAuthenticated, GradePermission)
     serializer_class = OutAtHomeTimelogSerializer
 
+
 class UpdateRequestEnterViewSet(ModelViewSet):
-    queryset = UpdateRequest.objects.all()
+    queryset = UpdateRequest.objects.all()## 나중에 client에서 url호출시 pk받기
     permission_classes = (IsAuthenticated,)
     serializer_class = UpdateRequestEnterSerializer
 
@@ -71,8 +72,18 @@ class UpdateRequestOutViewSet(ModelViewSet):
     serializer_class = UpdateRequestSerializer
 
 
+class TimelogList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'home/timelog_list.html'
 
-    # v = queryset.filter(,)
+    def get(self, request):
+        queryset = EnterTimelog.objects.all()
+        return Response({'timelogs': queryset})
+
+
+
+
+
 
 def update_request(request):
     if request.user.is_authenticated:
@@ -89,21 +100,7 @@ def logout_view(request):
         return render(request, 'registration/logged_out.html')
     return HttpResponse('ssewf')
 
-# 유저 데이터를 입력합니다.
-class ImportUserView(APIView):
-    serializer_class = UserSerializer # 받아온 값 저장
 
-    def post(self, request):
-        import csv
-        csv_file = request.FILES['csv']
-        decoded_file = csv_file.read().decode('utf-8')
-        io_string = io.StringIO(decoded_file)
-        reader=csv.reader(io_string, delimiter=',')
-        next(reader)
-        for line in reader:
-            print(line)
-            User.objects.create(username=line[0],grade=int(line[2]))
-        return Response({})
 
 
 # #각 유저별로 출퇴근 데이터를 얻어옵니다.
