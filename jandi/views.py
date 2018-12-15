@@ -47,7 +47,7 @@ class JandiOutAPIView(APIView):
                     text=data['text'],
                     breaktime=num)
                 print('--')
-                return HttpResponse(status=201)
+                # return HttpResponse(status=201)
 
             elif '정정' in text:
                 raise Exception('Wrong input')
