@@ -31,5 +31,5 @@ urlpatterns = [
     path('ex/', views.makeEach, name='ex'),
     path('api/timelog/', include(router.urls)),
     path('update-request/',views.update_request ,name='update_request'),
-    path('timelog_edit/<int:pk>',TimelogEdit.as_view(), name='timelog_edit')
+    path('timelog_edit/',TimelogEdit.as_view(), name='timelog_edit')
 ]
