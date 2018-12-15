@@ -2,21 +2,22 @@ import re
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, mixins, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from jandi.serializers import JandiSerializer
 from user.models import EnterTimelog, OutTimelog, EnterAtHomeTimelog, OutAtHomeTimelog
 
 
-class JandiEnterAPIView(APIView):
+class JandiEnterAPIView(mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
+                        generics.GenericAPIView):
+
+    queryset = EnterTimelog.objects.all()
     serializer_class = JandiSerializer
 
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({})
+    def post(self, requset, *args, **kwargs):
+        return self.create(requset, *args, **kwargs)
 
 
 class JandiOutAPIView(APIView):
