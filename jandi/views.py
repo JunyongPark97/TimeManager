@@ -10,14 +10,13 @@ from user.models import EnterTimelog, OutTimelog, EnterAtHomeTimelog, OutAtHomeT
 
 
 class JandiEnterAPIView(mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
                         generics.GenericAPIView):
 
     queryset = EnterTimelog.objects.all()
     serializer_class = JandiSerializer
-
-    def post(self, requset, *args, **kwargs):
-        return self.create(requset, *args, **kwargs)
+    #
+    # def post(self, requset, *args, **kwargs):
+    #     return self.create(requset, *args, **kwargs)
 
 
 class JandiOutAPIView(APIView):
