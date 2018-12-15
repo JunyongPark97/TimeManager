@@ -79,20 +79,21 @@ class TimelogList(APIView):
 
     def get(self, request):
         user=request.user
-        queryset = EnterTimelog.objects.filter(user=user)
+        queryset = EnterTimelog.objects.filter(user=user)#쿼리셋합쳐서 순서대로 나열하기
         return Response({'timelogs': queryset})
 
-class TimelogEdit(APIView):
+class TimelogEdit(APIView)
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'timelog_edit.html'
 
     def get(self, request, pk):
-        timelog = get_object_or_404(UpdateRequest, pk=pk)
-        serializer = UpdateRequestSerializer(timelog)
-        return Response({'serializer': serializer, 'timelogs': timelog})
+        # timelog = EnterTimelog.objects
+        serializer = EnterTimelogSerializer
+        return Response({'serializer': serializer})
 
     def post(self, request, pk):
-        timelog = get_object_or_404(UpdateRequest, pk=pk)
+        user=request.user
+        timelog = EnterTimelog.objects.get(pk=pk)
         serializer = UpdateRequestSerializer(timelog, data=request.data)
         if not serializer.is_valid():
             return Response({'serializer': serializer, 'timelogs': timelog})

@@ -47,6 +47,7 @@ class OutTimelogSerializer(TimelogSerializer):
         model = OutTimelog
         fields = '__all__'
 
+
 class EnterAtHomeTimelogSerializer(TimelogSerializer):
 
     class Meta:
