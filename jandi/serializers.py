@@ -30,28 +30,28 @@ class JandiOutSerializer(JandiSerializer):
 
     def create(self, validated_data):
         user = User.objects.get(writter_id=validated_data['writerName'])
+        print(validated_data)
         try:
             text = validated_data['text']
             num = re.findall("\d+", text)
 
             if len(num) == 1 and '오후반차' in text:
-                OutTimelog.objects.create(
+
+                return OutTimelog.objects.create(
                 user=user,
                 created_at=validated_data['createdAt'],
                 text=text,
                 breaktime=num,
                 half_day_off='오후반차'
                 )
-                print('00')
 
             elif len(num) == 1 and not '오후반차' in text:
-                OutTimelog.objects.create(
+                return OutTimelog.objects.create(
                 user=validated_data['writerName'],
                 created_at=validated_data['createdAt'],
                 text=text,
                 breaktime=num
                 )
-                print('--')
 
             elif '정정' in text:
                 raise Exception('Wrong input')
