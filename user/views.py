@@ -77,7 +77,6 @@ class TimelogList(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home/timelog_list.html'
     permission_classes = (IsAuthenticated, GradePermission)
-
     def get(self, request):
         user=request.user
         queryset = EnterTimelog.objects.filter(user=user)#쿼리셋합쳐서 순서대로 나열하기
