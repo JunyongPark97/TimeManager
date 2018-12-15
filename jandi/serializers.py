@@ -1,5 +1,6 @@
 import re
 
+from django.http import HttpResponse
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
@@ -53,4 +54,4 @@ class JandiOutSerializer(JandiSerializer):
             )
 
         elif '정정' in text:
-            raise Exception('Wrong input')
+            return HttpResponse('Wrong input')

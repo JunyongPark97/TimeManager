@@ -33,7 +33,7 @@ class EnterTimelog(Timelog):
 
 
 class OutTimelog(Timelog):
-    half_day_off = models.CharField(blank=True, null=True, max_length=10)#반차 기록
+    half_day_off = models.CharField(blank=True, null=True, max_length=100)#반차 기록
     breaktime = models.IntegerField(default=0)
 
 
