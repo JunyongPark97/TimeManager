@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 # from user.forms import RequestForm1, RequestForm2, RequestForm3
+from user.forms import EnterEditForm
 from user.models import *
 from user.permissions import GradePermission
 from user.serializers import UserSerializer, EnterTimelogSerializer, OutTimelogSerializer, \
@@ -87,14 +88,15 @@ class TimelogEdit(APIView):
     template_name = 'timelog_edit.html'
 
     def get(self, request, pk):
-        # timelog = EnterTimelog.objects
-        serializer = EnterTimelogSerializer
-        return Response({'serializer': serializer})
+        form=EnterEditForm()
+        timelog=get_object_or_404(EnterTimelog,pk=pk)
+        # serializer = EnterTimelogSerializer
+        return Response({'form': form, 'timelogs':timelog})
 
     def post(self, request, pk):
         user=request.user
         timelog = EnterTimelog.objects.get(pk=pk)
-        serializer = UpdateRequestSerializer(timelog, data=request.data)
+        serializer = UpdateRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({'serializer': serializer, 'timelogs': timelog})
         serializer.save()

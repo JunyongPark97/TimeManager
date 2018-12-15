@@ -25,3 +25,8 @@ from user.models import User, UpdateRequest
 #     class Meta:
 #         model = UpdateRequest
 #         fields = ['update','breaktime', 'receiver','reason']
+
+class EnterEditForm(forms.ModelForm):
+    class Meta:
+            model = UpdateRequest
+            fields = ['update','breaktime', 'receiver','reason']
