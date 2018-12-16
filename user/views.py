@@ -114,7 +114,7 @@ class EditTimelog(APIView):
     def post(self, request, pk):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.origin
+        # serializer.origin
         serializer.save()
         return Response({})
 
