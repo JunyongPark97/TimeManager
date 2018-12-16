@@ -4,7 +4,7 @@
 {% block content %}
 {#<h1>Timelog </h1>#}
 {##}
-<form action="{% url 'timelog_edit' timelogs.pk%}" method="POST">
+<form action="{% url 'user:timelog_edit' timelogs.pk%}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
     <input type="submit" value="Save">
