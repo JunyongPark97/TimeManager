@@ -100,6 +100,7 @@ class TimelogEditRequest(APIView):##
         return Response({'serializer': serializer, 'timelogs':timelog})
 
     def post(self, request, pk):
+        print(request)
         # user=request.user
         timelog=get_object_or_404(EnterTimelog,pk=pk)
         serializer = EnterTimelogSerializer(timelog, data=request.data)
