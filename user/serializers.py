@@ -2,6 +2,12 @@ from rest_framework import serializers
 
 from user.models import EnterTimelog, OutTimelog, OutAtHomeTimelog, EnterAtHomeTimelog, User, UpdateRequest
 
+class CurrentOriginDefault(object):
+    def set_context(self, serializer_field):
+        self.origin = serializer_field.context['origin']
+
+    def __call__(self):
+        return EnterTimelog.objects.get(pk=self.origin)
 
 class ObjectRelatedField(serializers.RelatedField):
     """
@@ -63,9 +69,43 @@ class OutAtHomeTimelogSerializer(TimelogSerializer):
         fields = '__all__'
 
 
-class UpdateRequestSerializer(serializers.ModelSerializer):
+
+class CurrentUserDefault(object):
+    def set_context(self, serializer_field):
+        self.user = serializer_field.context['request'].user
+
+    def __call__(self):
+        return self.user
+
+
+
+class EnterUpdateRequestSerializer(serializers.ModelSerializer):
+    origin = serializers.HiddenField(default=CurrentOriginDefault())
+    sender = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = UpdateRequest
-        fields = ('receiver','update','reason','breaktime')
+        fields = ('receiver','update','reason','breaktime', 'origin', 'sender')
 
+class EnterUpdateRequestEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UpdateRequest
+        fields = ('status',)
+        read_only_fields = ('update',)
+
+#
+# class OutUpdateRequestSerializer(serializers.ModelSerializer):
+#     origin = serializers.HiddenField(default=CurrentOriginDefault())
+#     sender = serializers.HiddenField(default=serializers.CurrentUserDefault())
+#
+#     class Meta:
+#         model = OutUpdateRequest
+#         fields = ('receiver','update','reason','breaktime', 'origin', 'sender')
+#
+# class OutUpdateRequestEditSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = OutUpdateRequest
+#         fields = ('status',)
+#         read_only_fields = ('update',)

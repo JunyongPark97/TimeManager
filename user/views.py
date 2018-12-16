@@ -1,7 +1,5 @@
-import copy
-import io
-from itertools import tee
-
+from itertools import tee, chain
+from operator import attrgetter
 from django.contrib import messages
 from django.contrib.auth import logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -21,12 +19,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
-# from user.forms import RequestForm1, RequestForm2, RequestForm3
-from user.forms import EnterEditForm
 from user.models import *
 from user.permissions import GradePermission
 from user.serializers import UserSerializer, EnterTimelogSerializer, OutTimelogSerializer, \
-    EnterAtHomeTimelogSerializer, OutAtHomeTimelogSerializer, UpdateRequestSerializer
+    EnterAtHomeTimelogSerializer, OutAtHomeTimelogSerializer, \
+    EnterUpdateRequestSerializer, EnterUpdateRequestEditSerializer
 
 
 class TimelogReadOnlyViewSet(mixins.CreateModelMixin,# 모델 뷰셋 인데 따로 기능 수정해야 해서 선언
@@ -62,72 +59,75 @@ class OutAtHomeTimelogViewSet(TimelogReadOnlyViewSet):
     serializer_class = OutAtHomeTimelogSerializer
 
 
-# class UpdateRequestEnterViewSet(ModelViewSet):
-#     queryset = UpdateRequest.objects.all()## 나중에 client에서 url호출시 pk받기
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = UpdateRequestEnterSerializer
-
-class UpdateRequestOutViewSet(ModelViewSet):
-    queryset = UpdateRequest.objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UpdateRequestSerializer
-
-
 class TimelogList(APIView):
+    """
+    본인의 Timelog list를 보여주는 클래스입니다.
+    """
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home/timelog_list.html'
     permission_classes = (IsAuthenticated, GradePermission)
     def get(self, request):
         user=request.user
         queryset = EnterTimelog.objects.filter(user=user)#쿼리셋합쳐서 순서대로 나열하기
-        return Response({'timelogs': queryset})
+        queryset2 = OutTimelog.objects.filter(user=user)
+        queryset3 = EnterAtHomeTimelog.objects.filter(user=user)
+        query=sorted(
+            chain(queryset, queryset2, queryset3),
+            key=attrgetter('created_at'),
+            reverse=True)
+        print(query)
 
-# def timelog_edit_page(request, pk):
-#
+        return Response({'timelogs': query})
 
 
-class TimelogEditRequest(APIView):##
+class TimelogEditRequest(APIView):
+    """
+    수정사항 입력시 사용합니다.
+    요청이 post로 들어올 시, UpdateRequest라는 임시 모델에 시간을 저장합니다.
+    """
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home/timelog_edit.html'
 
     def get(self, request, pk):
-        print(request.data)
-        # form=EnterEditForm()
-        timelog=get_object_or_404(EnterTimelog,pk=pk)
-        # timelog=EnterTimelog.objects.get(pk=pk)
-        serializer = EnterTimelogSerializer(timelog)
-        # serializer = EnterTimelogSerializer
-        return Response({'serializer': serializer, 'timelogs':timelog})
+        serializer = EnterUpdateRequestSerializer()
+        return Response({'serializer': serializer})
 
     def post(self, request, pk):
         print(request.data)
-        # user=request.user
-        timelog=get_object_or_404(EnterTimelog,pk=pk)
-        serializer = EnterTimelogSerializer(timelog, data=request.data)
+        serializer = EnterUpdateRequestSerializer(data = request.data, context={'origin': pk, 'request': request})
         if not serializer.is_valid():
-            return Response({'serializer': serializer, 'timelogs': timelog})
+            return Response({'serializer': serializer})
         serializer.save()
         return redirect('user:timelog_list')
 
+
 class EditTimelog(APIView):
-    serializer_class = UpdateRequestSerializer
+    serializer_class = EnterUpdateRequestEditSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'home/request_list_to_edit.html'
 
-    def post(self, request, pk):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        # serializer.origin
-        serializer.save()
-        return Response({})
+    def get(self, request):
+        user=request.user
+        update_request = UpdateRequest.objects.filter(receiver=user)
+        return Response({'update_request': update_request})
 
+    # 초이스 할 수 있는 폼 & 수락, 거절에 따른 DB업데이트
+def edittimelogconfirm(request, pk1, pk2):
+        update_request = get_object_or_404(UpdateRequest, pk=pk1)
+        if update_request.receiver == request.user:
+            if pk2 == 1:  # 수락
+                enter_timelog = update_request.origin
+                enter_timelog.created_at = update_request.update
+                print(update_request.update)
+                enter_timelog.save()
+                print((enter_timelog.created_at))
+                update_request.status=1
+                update_request.save()
+            else:
+                update_request.status = 2
+                update_request.save()
+        return redirect(reverse('user:edit_timelog'))
 
-def update_request(request):
-    if request.user.is_authenticated:
-        user = request.user  # user는 에초에 init에 정의되어있음, User모델 추가함으로써 자동으로 해당 모델 참조.
-        last_week = datetime.datetime.now() - datetime.timedelta(days=7)
-        timelogs = EnterTimelog.objects.filter(user=user,
-                                          created_at__gt=last_week)  # 자기자신의 정보 앞의 user는 foreignkey로 user_id와 같음
-
-    return render(request, 'home/update_req.html',context={'timelogs':timelogs})
 
 def logout_view(request):
     if request.user.is_authenticated:
@@ -241,60 +241,6 @@ def logout_view(request):
 
 
 # grade 정보에 따라 timelog 정보를 보냅니다.
-def list(request):
-    if request.user.is_authenticated:
-        user = request.user # user는 에초에 init에 정의되어있음, User모델 추가함으로써 자동으로 해당 모델 참조.
-        last_week = datetime.datetime.now() - datetime.timedelta(days=7)
-        timelogs = Timelog.objects.filter(user=user, created_at__gt=last_week)# 자기자신의 정보 앞의 user는 foreignkey로 user_id와 같음
-        if user.grade == 1: #Clevel  2,3
-            timelogs_3 = Timelog.objects.filter(user__grade=3, created_at__gt=last_week) #grade3인 유저의 정보
-            timelogs_2 = Timelog.objects.filter(user__grade=2, created_at__gt=last_week) #grade2인 유저의 정보
-            return render(request, 'home/home.html', context={'timelogs': timelogs,
-                                                              'timelogs_2':timelogs_2,
-                                                              'timelogs_3': timelogs_3})
-        elif user.grade == 2: #leader 2
-            timelogs_3 = Timelog.objects.filter(user__grade=3, created_at__gt=last_week) #grade3인 유저의 정보
-            return render(request, 'home/home.html', context={'timelogs': timelogs,
-                                                              'timelogs_2': None,
-                                                              'timelogs_3': timelogs_3})
-        else:
-            return render(request, 'home/home.html', context={'timelogs': timelogs,
-                                                              'timelogs_2':None,
-                                                              'timelogs_3':None})
-    else:
-        return render (request, 'home/home.html')
-
-# @login_required()
-# # 변경사항 입력하는 뷰
-# def request_view(request,pk):#여기서 pk는 수정 누를때(timelog.pk) pk(수정 누르는 해당 time table의 id) 아 그리고 헷갈리는데
-#     #request에는 userid(user), breaktime, update, receiver가 들어있음( 우리가 입력해서 보냈던 정보가 이미 들어있음)
-#
-#     if request.method == "GET": # request가 GET이면 RequestForm을 실행 및 보여주고,
-#         if request.user.grade == 1:
-#             forsdiv = RequestForm1
-#         elif request.user.grade == 2:
-#             forsdiv = RequestForm2
-#         else:
-#             forsdiv = RequestForm3
-#         form = forsdiv()
-#         return render(request, 'home/request.html', context={'form': form})
-#
-#     elif request.method == "POST":
-#         if request.user.grade == 1:
-#             form = RequestForm1(request.POST)
-#         elif request.user.grade == 2:
-#             form = RequestForm2(request.POST)
-#         else:
-#             form = RequestForm3(request.POST)
-#
-#         if form.is_valid():
-#             request_info = form.save(commit=False)
-#             request_info.sender = request.user
-#             request_info.timelog = Timelog.objects.get(pk=pk)
-#             request_info.save()# 이제 이 값은 db에 저장되고, 나중에 grade 별로 RequestInfo.objects.get() 다르게 해서 보여주면 됨.
-#             context = {'time_before':request_info.timelog.created_at,'time_edit':request_info.update}
-#             return render(request, 'home/request_done.html', context)
-#     return render(request, 'home/home.html')
 
 def change_password(request):
     if request.method =='POST':
@@ -314,39 +260,8 @@ def change_password(request):
 def gotohome(request):
     return render(request, 'registration/change_password_done1.html')
 
-@login_required()
-def requestlist(request): # url 줄 때 로그인 한 User id 정보를 id에 담아서 보낼 예정
-    if request.user.is_authenticated:
-        request_list = UpdateRequest.objects.filter(receiver=request.user)#filter는 쿼리셋 반환 for문 돌려서 인스턴스 받을 수 있음
-        #get()의 경우 인스턴스 (객체) 반환해서 get().name 이렇게 바로 참조할 수 있음
-        #여기서 나오는 sender는 RequestInfo의 sender인자이 인자는 User모델 외래키. 즉 sender_id= User 테이블의 고유 id가 저장되어있음.
-        # 이 값이 인자로 받은 로그인한 유저의 id인 경우
-        context = {
-            'request_list':request_list
-        }
-        return render(request, 'home/edit_request.html', context)
-    # elif request.method == 'GET':
-    #     return  HttpResponse('get')##수정 필요!! try
 
 
-# 초이스 할 수 있는 폼 & 수락, 거절에 따른 DB업데이트
-def editrequest(request,pk1,pk2):
-    info = UpdateRequest.objects.get(pk=pk1)
-    if info.receiver == request.user:
-        if pk2==1:#수락
-            info.status = 1  # status에 1 값 넣어두고 저장 -> 템플릿에서 해당 목록 보일 때에는 status=0일때만 보이게 함.
-            info.save()
-            timelog = info.timelog ## RequestInfo 의 timelog에 접근
-            timelog.created_at = info.update # 해당 timelogdml created_at 을 update값으로 바꿈
-            if timelog.created_at.time() < datetime.time(12):
-                timelog.half_day_off=None
-            timelog.save()
-        else:
-            info.status = 2
-            info.save()
-    return redirect(reverse('user:requestlist'))
-
-# @login_required()
 def graph(request): # 그래프를 그리기 위한 데이터를 뽑습니다.
     if request.method=="GET":
         if request.user.is_authenticated:
@@ -440,20 +355,20 @@ def get_graph(queryset):  # 그래프를 그리기 위한 함수.
 
         return (week_hours)
 
-def makeEach(request):
-    users3=User.objects.filter(grade=3)
-    grade3data={}
-    for user in users3:
-        queryset3 = Timelog.objects.filter(created_at__week_day__lte=datetime.datetime.now().weekday(),
-                                          created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
-                                          user=user).order_by('created_at')
-        grade3data[user]=get_graph(queryset3)
-        # grade3data_e=enumerate(grade3data)
-        count=Timelog.objects.filter(created_at__week_day__lte=datetime.datetime.now().weekday(),
-                                          created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
-                                          user=user,half_day_off='오전 반차').order_by('created_at')
-        lcount={}
-        lcount[user]=len(count)
-    print(grade3data)
-
-    return  render(request,'home/ex.html',{'grade3data':grade3data,'count':lcount})
+# def makeEach(request):
+#     users3=User.objects.filter(grade=3)
+#     grade3data={}
+#     for user in users3:
+#         queryset3 = Timelog.objects.filter(created_at__week_day__lte=datetime.datetime.now().weekday(),
+#                                           created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
+#                                           user=user).order_by('created_at')
+#         grade3data[user]=get_graph(queryset3)
+#         # grade3data_e=enumerate(grade3data)
+#         count=Timelog.objects.filter(created_at__week_day__lte=datetime.datetime.now().weekday(),
+#                                           created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
+#                                           user=user,half_day_off='오전 반차').order_by('created_at')
+#         lcount={}
+#         lcount[user]=len(count)
+#     print(grade3data)
+#
+#     return  render(request,'home/ex.html',{'grade3data':grade3data,'count':lcount})

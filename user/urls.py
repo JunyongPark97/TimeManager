@@ -6,7 +6,7 @@ from rest_framework.routers import SimpleRouter
 
 from user import views
 from user.views import EnterTimelogViewSet, OutTimelogViewSet, EnterAtHomeTimelogViewSet, \
-    OutAtHomeTimelogViewSet, TimelogList, TimelogEditRequest
+    OutAtHomeTimelogViewSet, TimelogList, TimelogEditRequest, EditTimelog
 
 router = SimpleRouter()
 router.register('enter', EnterTimelogViewSet)
@@ -23,13 +23,16 @@ urlpatterns = [
     # path('request/<int:pk>', views.request_view, name='request'),
     path('password/',views.change_password, name='change_password'),
     path('gotohome/',views.gotohome, name='gotohome' ),
-    path('request-list/',views.requestlist, name='requestlist'),
-    path('request-list/<int:pk1>/<int:pk2>/',views.editrequest, name='editrequest'),
-    path('list/', views.list, name='list'),
+    # path('request-list/',views.requestlist, name='requestlist'),
+    # path('request-list/<int:pk1>/<int:pk2>/',views.editrequest, name='editrequest'),
+    # path('list/', views.list, name='list'),
     # path('api/import/', ImportCSVView.as_view(), name='import_csv'),
     # path('api/import/user', ImportUserView.as_view(), name='import_Usercsv'),
-    path('ex/', views.makeEach, name='ex'),
+    # path('ex/', views.makeEach, name='ex'),
     path('api/timelog/', include(router.urls)),
-    path('update-request/',views.update_request ,name='update_request'),
-    path('timelog_edit/<int:pk>',TimelogEditRequest.as_view(), name='timelog_edit')
+    # path('update-request/',views.update_request ,name='update_request'),
+    path('timelog_edit/<int:pk>/',TimelogEditRequest.as_view(), name='timelog_edit'),
+    path('edit/',EditTimelog.as_view(),name='edit_timelog'),
+    path('edit/<int:pk1>/<int:pk2>/',views.edittimelogconfirm,name='edit_timelog_confirm'),
+
 ]

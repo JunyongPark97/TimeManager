@@ -1,0 +1,30 @@
+{% extends 'registration/base.html' %}
+{% load rest_framework %}
+{% block content %}
+
+{#    {% for update_req in update_request %}#}
+{#    {% if update_req.status == 0 %}#}
+{##}
+{#    <p>{{ update_requset.update }}</p>#}
+{#        <a href="{% url 'user:edit' pk2=1%}">수락</a>#}
+{#        <a href="{% url 'user:edit' pk2=2%}">거절</a>#}
+{#        {% endif %}#}
+{#        {% endfor %}#}
+{#    <form action="" method="POST">#}
+{#    {% csrf_token %}#}
+{#    {% render_form field %}#}
+{#    <input type="submit" value="Save">#}
+{#    </form>#}
+{#    {% endfor %}#}
+        {% for info in update_request %}
+        {% if info.status == 0 %}
+            <div class="list"><span class="glyphicon glyphicon-check"></span> 받는사람 {{ info.receiver }} 보낸사람 {{ info.sender }}, 쉬는시간 {{ info.breaktime }}, 원래시간 {{ info.origin.created_at }}, 수정시간 {{ info.update }}
+                {{ info.timelog_id }}, 사유 : {{ info.reason }}</div>
+        <a href="{% url 'user:edit_timelog_confirm' info.pk 1%}"><span class="glyphicon glyphicon-ok"></span>수락</a>
+        <a href="{% url 'user:edit_timelog_confirm' info.pk 2%}"><span class="glyphicon glyphicon-remove"></span>거절</a>
+        <br>
+        {% endif %}
+        <br>
+    {% endfor %}
+
+{% endblock %}
