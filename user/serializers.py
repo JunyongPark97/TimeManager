@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from user.models import EnterTimelog, OutTimelog, OutAtHomeTimelog, EnterAtHomeTimelog, User, UpdateRequest
+from user.models import EnterTimelog, OutTimelog, OutAtHomeTimelog, EnterAtHomeTimelog, User, UpdateRequest, UserTime
+
 
 class CurrentOriginDefault(object):
     def set_context(self, serializer_field):
@@ -94,18 +95,8 @@ class EnterUpdateRequestEditSerializer(serializers.ModelSerializer):
         fields = ('status',)
         read_only_fields = ('update',)
 
-#
-# class OutUpdateRequestSerializer(serializers.ModelSerializer):
-#     origin = serializers.HiddenField(default=CurrentOriginDefault())
-#     sender = serializers.HiddenField(default=serializers.CurrentUserDefault())
-#
-#     class Meta:
-#         model = OutUpdateRequest
-#         fields = ('receiver','update','reason','breaktime', 'origin', 'sender')
-#
-# class OutUpdateRequestEditSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = OutUpdateRequest
-#         fields = ('status',)
-#         read_only_fields = ('update',)
+class UserTimeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserTime
+        fields='__all__'

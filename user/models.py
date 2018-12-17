@@ -54,3 +54,11 @@ class UpdateRequest(models.Model):
     breaktime = models.IntegerField()
     origin = models.ForeignKey(EnterTimelog, related_name='originRequestInfo',on_delete=models.CASCADE)
 
+class UserTime(models.Model):
+    monday = models.IntegerField(default=0)
+    tuesday = models.IntegerField(default=0)
+    wednesday = models.IntegerField(default=0)
+    thursday = models.IntegerField(default=0)
+    friday = models.IntegerField(default=0)
+    saturday = models.IntegerField(default=0)
+    sonday = models.IntegerField(default=0)

@@ -6,7 +6,7 @@ from rest_framework.routers import SimpleRouter
 
 from user import views
 from user.views import EnterTimelogViewSet, OutTimelogViewSet, EnterAtHomeTimelogViewSet, \
-    OutAtHomeTimelogViewSet, TimelogList, TimelogEditRequest, EditTimelog
+    OutAtHomeTimelogViewSet, TimelogList, TimelogEditRequest, EditTimelog, MakeGraph
 
 router = SimpleRouter()
 router.register('enter', EnterTimelogViewSet)
@@ -34,5 +34,6 @@ urlpatterns = [
     path('timelog_edit/<int:pk>/',TimelogEditRequest.as_view(), name='timelog_edit'),
     path('edit/',EditTimelog.as_view(),name='edit_timelog'),
     path('edit/<int:pk1>/<int:pk2>/',views.edittimelogconfirm,name='edit_timelog_confirm'),
+    path('timedata/',MakeGraph.as_view(),name='timedata')
 
 ]
