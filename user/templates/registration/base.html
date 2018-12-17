@@ -51,6 +51,7 @@
           {% if user.is_active %}
 {#          <li><a href="{%url 'user:graph' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>#}
           <li><a href="{% url 'user:timelog_list' %}"><span class="glyphicon glyphicon-calendar"></span> List</a></li>
+          <li><a href="{% url 'user:timedata' %}"><span class="glyphicon glyphicon-calendar"></span> Data</a></li>
           {#          <li><a href="{% url 'admin:index' %}">Admin</a></li>#}
           {% endif %}
         </ul>
