@@ -153,7 +153,7 @@ def calculateTime(timeA,timeB):#출근,퇴근 순서대로 입력받아 시간 �
     if timeA < timeB:
         week[timeA.weekday()]=convertTimetoNum(timeB-timeA)
         return week
-    week[timeA.timeA.weekday()]=0
+    week[timeA.weekday()]=0
     return week
 
 def convertTimetoNum(time):
