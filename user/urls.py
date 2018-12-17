@@ -16,9 +16,9 @@ router.register('out-at-home', OutAtHomeTimelogViewSet)
 
 app_name='user'
 urlpatterns = [
-    path('/', TimelogList.as_view(), name='timelog_list'),
+    path('', TimelogList.as_view(), name='timelog_list'),
     path('login/',LoginView.as_view(),name='login'),
-    path('logout1/',LogoutView.as_view(),{'next_page':'/'},name='logout1'),
+    path('logout1/',LogoutView.as_view(),name='logout1'),
     path('password/',views.change_password, name='change_password'),
     path('api/timelog/', include(router.urls)),
     path('timelog_edit/<int:pk>/',TimelogEditRequest.as_view(), name='timelog_edit'),
