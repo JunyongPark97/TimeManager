@@ -177,7 +177,3 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'registration/change_password.html',{'form':form})
-
-
-
-

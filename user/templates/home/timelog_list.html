@@ -1,14 +1,23 @@
 {% extends 'registration/base.html' %}
 {% block content %}
 
-<h1>Timelogs</h1>
-<ul>
+
+    {%  if user.is_authenticated  %}
+
+    <h1>Timelogs</h1>
+    <ul>
     {% for timelog in timelogs %}
     <li>{{ timelog.user }},  {{ timelog.text }},  {{ timelog.created_at }}</li>
     <a href="{% url 'user:timelog_edit' timelog.pk%}">수정</a>
         <br>
         <br>
     {% endfor %}
-</ul>
+    </ul>
+
+    {% else %}
+     <p>You are not logged in</p>
+     <a href="{% url 'user:login' %}">login</a>
+
+    {% endif %}
 
 {% endblock %}
