@@ -2,29 +2,23 @@ from itertools import tee, chain
 from operator import attrgetter
 from django.contrib import messages
 from django.contrib.auth import logout, update_session_auth_hash
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.utils import timezone
 from collections import Counter
-import datetime
-import  time
-from datetime import timedelta
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-
 from user.models import *
 from user.permissions import GradePermission
 from user.serializers import UserSerializer, EnterTimelogSerializer, OutTimelogSerializer, \
     EnterAtHomeTimelogSerializer, OutAtHomeTimelogSerializer, \
-    EnterUpdateRequestSerializer, EnterUpdateRequestEditSerializer
+    EnterUpdateRequestSerializer, EnterUpdateRequestEditSerializer, UserTimeSerializer
 
 
 class TimelogReadOnlyViewSet(mixins.CreateModelMixin,# 모델 뷰셋 인데 따로 기능 수정해야 해서 선언
@@ -78,8 +72,6 @@ class TimelogList(APIView):
             chain(queryset, queryset2, queryset3, queryset4),
             key=attrgetter('created_at'),
             reverse=True)
-        print(query)
-
         return Response({'timelogs': query})
 
 
@@ -96,7 +88,6 @@ class TimelogEditRequest(APIView):
         return Response({'serializer': serializer})
 
     def post(self, request, pk):
-        print(request.data)
         serializer = EnterUpdateRequestSerializer(data = request.data, context={'origin': pk, 'request': request})
         if not serializer.is_valid():
             return Response({'serializer': serializer})
@@ -121,9 +112,7 @@ def edittimelogconfirm(request, pk1, pk2):
             if pk2 == 1:  # 수락
                 enter_timelog = update_request.origin
                 enter_timelog.created_at = update_request.update
-                print(update_request.update)
                 enter_timelog.save()
-                print((enter_timelog.created_at))
                 update_request.status=1
                 update_request.save()
             else:
@@ -140,7 +129,6 @@ def logout_view(request):
 
 
 class MakeGraph(APIView):
-    # serializer_class = EnterUpdateRequestEditSerializer
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home/timedata.html'
 
@@ -158,6 +146,7 @@ def latestTimelogs(user):
     hometime=calculateTime(enterhometimelog,outhometimelog)
     weektime=Counter(normaltime)+Counter(hometime)
     return weektime
+
 
 def calculateTime(timeA,timeB):#출근,퇴근 순서대로 입력받아 시간 계산
     week={}
@@ -190,118 +179,5 @@ def change_password(request):
     return render(request, 'registration/change_password.html',{'form':form})
 
 
-def gotohome(request):
-    return render(request, 'registration/change_password_done1.html')
 
 
-
-def graph(request): # 그래프를 그리기 위한 데이터를 뽑습니다.
-    if request.method=="GET":
-        if request.user.is_authenticated:
-            user = request.user
-            users2=User.objects.filter(grade=2)
-            users3=User.objects.filter(grade=3)
-            grade2data={}
-            grade3data={}
-            owndata = Timelog.objects.filter(#created_at__week_day__lte=datetime.datetime.now().weekday(),
-                                             created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
-                                              user=user).order_by('created_at')
-            own = get_graph(owndata)
-
-            if user.grade==1:
-                for user2 in users2:
-                    queryset2 = Timelog.objects.filter(#created_at__week_day__lte=datetime.datetime.now().weekday(),
-                                                       created_at__gt=datetime.datetime.now() - datetime.timedelta(days=8),
-                                                       user=user2).order_by('created_at')
-                    grade2data[user2] = get_graph(queryset2)
-                for user3 in users3:
-                    queryset3 = Timelog.objects.filter(#created_at__week_day__lte=datetime.datetime.now().weekday(),
-                                                       created_at__gt=datetime.datetime.now() - datetime.timedelta(days=8),
-                                                       user=user3).order_by('created_at')
-                    grade3data[user3] = get_graph(queryset3)
-                return render(request, 'home/graph.html', context={'own':own,'grade2data':grade2data,'grade3data':grade3data})
-
-            elif user.grade==2:
-                for user3 in users3:
-                    queryset3 = Timelog.objects.filter(#created_at__week_day__lte=datetime.datetime.now().weekday(), -> 일주일 데이터만 보여줌.
-                                                       created_at__gt=datetime.datetime.now() - datetime.timedelta(days=8),
-                                                       user=user3).order_by('created_at')
-                    grade3data[user3] = get_graph(queryset3)
-                return render(request,'home/graph.html',context={'own':own,'grade2data':None,'grade3data':grade3data})
-
-            else:
-                return render(request,'home/graph.html',context={'own':own,'grade2data':None,'grade3data':grade3data})
-        else:
-            return render(request,'registration/base.html')
-    else:
-        return render(request, 'registration/base.html')
-
-
-def get_graph(queryset):  # 그래프를 그리기 위한 함수.
-        work_times = {}
-        iterator = queryset.iterator()
-        for timelog in iterator:
-            if timelog.keyword in [2, 4]: # 월요일 처음 받은 timelog가 퇴근 또는 퇴근 (재택) 일 경우 해결하기 위해
-                week_day = timelog.created_at.weekday()# 생성된 날의 날짜 정보 얻어옴
-                monday = timelog.created_at - datetime.timedelta(week_day)# 그 주의 월요일 정보를 얻어옴 (날짜만 월요일)
-                time1 = monday.time()# 시간까지 00:00:00 으로 맞추기 위해 월요일의 시간을 얻어옴
-                monday = monday - datetime.timedelta(hours=time1.hour, minutes=time1.minute, seconds=time1.second,
-                                                         microseconds=time1.microsecond)# 월요일 자정으로 맞춤
-                work_time = timelog.created_at - monday
-                work_times[0] = work_time
-            else:# 월요일 처음 받은 timelog가 출근 또는 출근 (재택)일 경우
-                try:
-                    start = timelog # start 에 timelog 복제해놓음
-                    iterator, iterator2 = tee(iterator)
-                    week_day = start.created_at.weekday()
-                    if next(iterator2):# 다음 timelog가 있을 경우
-                        end = next(iterator)
-                        if week_day in work_times:
-                            work_times[week_day] += (end.created_at - start.created_at)# 같은날 데이터가 있을 경우 더함
-                        else:
-                            work_times[week_day] = (end.created_at - start.created_at)
-                    else:
-                        if week_day in work_times:
-                            work_times[week_day] += (datetime.datetime.now() - start.created_at)
-                        else:
-                            work_times[week_day] = (datetime.datetime.now() - start.created_at)
-                except StopIteration:
-                    break
-        for d in work_times:
-            work_times[d] = str(work_times[d])
-            print(work_times[d])
-            try:
-                work_times[d] = round((float(work_times[d].split(':')[0]) + float(work_times[d].split(':')[1]) / 60),2)  # hours:momutes to hours
-            except:# 첫날 정보가 24시간 이상이면 23시간 30분으로 저장
-                hrs = time.strftime('%H:%M:%S', time.gmtime(86300))
-                work_times[d] = hrs
-                work_times[d] = round((float(work_times[d].split(':')[0]) + float(work_times[d].split(':')[1]) / 60),2)  # hours:momutes to hours
-            print(work_times[d])
-
-        week_hours = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
-        total = 0
-        for i in week_hours:
-            if i in work_times.keys(): week_hours[i] = work_times[i]
-            total += week_hours[i]
-            total = round(total, 2)
-        week_hours['total']=total
-
-        return (week_hours)
-
-# def makeEach(request):
-#     users3=User.objects.filter(grade=3)
-#     grade3data={}
-#     for user in users3:
-#         queryset3 = Timelog.objects.filter(created_at__week_day__lte=datetime.datetime.now().weekday(),
-#                                           created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
-#                                           user=user).order_by('created_at')
-#         grade3data[user]=get_graph(queryset3)
-#         # grade3data_e=enumerate(grade3data)
-#         count=Timelog.objects.filter(created_at__week_day__lte=datetime.datetime.now().weekday(),
-#                                           created_at__gt=datetime.datetime.now()-datetime.timedelta(days=8),
-#                                           user=user,half_day_off='오전 반차').order_by('created_at')
-#         lcount={}
-#         lcount[user]=len(count)
-#     print(grade3data)
-#
-#     return  render(request,'home/ex.html',{'grade3data':grade3data,'count':lcount})

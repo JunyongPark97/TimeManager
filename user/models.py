@@ -29,20 +29,23 @@ class Timelog(models.Model):# 얘를 상속받을 것
 
 
 class EnterTimelog(Timelog):
-    pass
+    keyword=models.IntegerField(default=1,blank=True ,null=True)
 
 
 class OutTimelog(Timelog):
     half_day_off = models.CharField(blank=True, null=True, max_length=100)#반차 기록
     breaktime = models.IntegerField(default=0)
+    keyword=models.IntegerField(default=2,blank=True ,null=True)
 
 
 class EnterAtHomeTimelog(Timelog):
-    pass
+    keyword=models.IntegerField(default=3,blank=True ,null=True)
+
 
 
 class OutAtHomeTimelog(Timelog):
     breaktime = models.IntegerField(default=0)
+    keyword=models.IntegerField(default=4,blank=True ,null=True)
 
 
 class UpdateRequest(models.Model):

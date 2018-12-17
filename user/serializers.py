@@ -44,6 +44,7 @@ class EnterTimelogSerializer(TimelogSerializer):
     class Meta:
         model = EnterTimelog
         fields = '__all__'
+        read_only_field=('keyword')
 
 
 class OutTimelogSerializer(TimelogSerializer):
@@ -53,6 +54,7 @@ class OutTimelogSerializer(TimelogSerializer):
     class Meta:
         model = OutTimelog
         fields = '__all__'
+        read_only_field=('keyword')
 
 
 class EnterAtHomeTimelogSerializer(TimelogSerializer):
@@ -60,6 +62,7 @@ class EnterAtHomeTimelogSerializer(TimelogSerializer):
     class Meta:
         model = EnterAtHomeTimelog
         fields = '__all__'
+        read_only_field=('keyword')
 
 
 class OutAtHomeTimelogSerializer(TimelogSerializer):
@@ -68,6 +71,7 @@ class OutAtHomeTimelogSerializer(TimelogSerializer):
     class Meta:
         model = OutAtHomeTimelog
         fields = '__all__'
+        read_only_field=('keyword')
 
 
 
