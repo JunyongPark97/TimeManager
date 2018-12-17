@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from user.models import EnterTimelog, OutTimelog, OutAtHomeTimelog, EnterAtHomeTimelog, User, UpdateRequest, UserTime
+from user.models import EnterTimelog, OutTimelog, OutAtHomeTimelog, EnterAtHomeTimelog, User, UpdateRequest
 
 
 class CurrentOriginDefault(object):
@@ -99,8 +99,8 @@ class EnterUpdateRequestEditSerializer(serializers.ModelSerializer):
         fields = ('status',)
         read_only_fields = ('update',)
 
-class UserTimeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = UserTime
-        fields='__all__'
+# class UserTimeSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = UserTime
+#         fields='__all__'

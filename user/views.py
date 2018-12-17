@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from collections import Counter
@@ -18,7 +18,7 @@ from user.models import *
 from user.permissions import GradePermission
 from user.serializers import UserSerializer, EnterTimelogSerializer, OutTimelogSerializer, \
     EnterAtHomeTimelogSerializer, OutAtHomeTimelogSerializer, \
-    EnterUpdateRequestSerializer, EnterUpdateRequestEditSerializer, UserTimeSerializer
+    EnterUpdateRequestSerializer
 
 
 class TimelogReadOnlyViewSet(mixins.CreateModelMixin,# 모델 뷰셋 인데 따로 기능 수정해야 해서 선언
@@ -88,7 +88,11 @@ class TimelogEditRequest(APIView):
         return Response({'serializer': serializer})
 
     def post(self, request, pk):
-        serializer = EnterUpdateRequestSerializer(data = request.data, context={'origin': pk, 'request': request})
+        serializer = EnterUpdateRequestSerializer(
+            data = request.data,
+            context={'origin': pk, 'request': request}
+            )
+
         if not serializer.is_valid():
             return Response({'serializer': serializer})
         serializer.save()
@@ -100,12 +104,18 @@ class EditTimelog(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home/request_list_to_edit.html'
 
+    def get_objects(self, user):
+        try:
+            return UpdateRequest.objects.filter(receiver=user)
+        except UpdateRequest.DoesNotExist:
+            raise Http404
+
     def get(self, request):
         user=request.user
-        update_request = UpdateRequest.objects.filter(receiver=user)
+        update_request = self.get_objects(user)
         return Response({'update_request': update_request})
 
-    # 초이스 할 수 있는 폼 & 수락, 거절에 따른 DB업데이트
+
 def edittimelogconfirm(request, pk1, pk2):
         update_request = get_object_or_404(UpdateRequest, pk=pk1)
         if update_request.receiver == request.user:
@@ -136,6 +146,7 @@ class MakeGraph(APIView):
         user=request.user
         a=latestTimelogs(user)
         return Response({'a':a})
+
 
 def latestTimelogs(user):
     entertimelog=EnterTimelog.objects.filter(user=user).latest('created_at').created_at
